@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+//vem padrão...
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+//aqui digo que usárei o sqlite como base de dados.
+datasource db {
+  provider = "sqlite"
+  url = "file:./dev.db"
+}
+
+model User { //criando um model...
+  id          String @id @default(uuid())
+  name        String
+  github_id   Int
+  avatar_url  String
+  login       String
+
+  @@map("users")//define o nome da tabela...
+  //um usuário tem muitas mensagens
+  message Message[]
+}
+
+//para rodar a migração: $ yarn prisma migrate dev
+
+model Message {
+  id          String @id @default(uuid())
+  text        String
+  created_at  DateTime @default(now())
+
+  //uma mensagem tem um usuário...
+  user User   @relation(fields: [user_id], references: [id])
+  @@map("messages")
+  user_id     String
+}
